@@ -7,6 +7,8 @@ import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
 import com.google.mediapipe.tasks.vision.facelandmarker.FaceLandmarkerResult
+import androidx.core.content.ContextCompat
+import android.graphics.BlurMaskFilter
 
 class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
 
@@ -14,15 +16,44 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
 
     // Subtle dots for all 468 landmarks
     private val dotPaint = Paint().apply {
-        color = Color.argb(100, 0, 255, 255)
+        color = ContextCompat.getColor(context!!, R.color.accentCyan)
+        alpha = 180
         style = Paint.Style.FILL
-        isAntiAlias = false
+        isAntiAlias = true
     }
 
-    // Bright contour paint for key facial features
-    private val contourPaint = Paint().apply {
-        color = Color.argb(220, 0, 230, 180)
-        strokeWidth = 1.5f
+    // Bright contour paint for key facial features (Eyes)
+    private val eyesPaint = Paint().apply {
+        color = ContextCompat.getColor(context!!, R.color.accentCyan)
+        strokeWidth = 4f
+        style = Paint.Style.STROKE
+        isAntiAlias = true
+        maskFilter = android.graphics.BlurMaskFilter(8f, android.graphics.BlurMaskFilter.Blur.SOLID)
+    }
+
+    // Lips
+    private val lipsPaint = Paint().apply {
+        color = ContextCompat.getColor(context!!, R.color.accentCoral)
+        strokeWidth = 4f
+        style = Paint.Style.STROKE
+        isAntiAlias = true
+        maskFilter = android.graphics.BlurMaskFilter(8f, android.graphics.BlurMaskFilter.Blur.SOLID)
+    }
+
+    // Eyebrows
+    private val browsPaint = Paint().apply {
+        color = ContextCompat.getColor(context!!, R.color.accentGold)
+        strokeWidth = 4f
+        style = Paint.Style.STROKE
+        isAntiAlias = true
+        maskFilter = android.graphics.BlurMaskFilter(8f, android.graphics.BlurMaskFilter.Blur.SOLID)
+    }
+
+    // Face Oval
+    private val facePaint = Paint().apply {
+        color = Color.WHITE
+        alpha = 100
+        strokeWidth = 2f
         style = Paint.Style.STROKE
         isAntiAlias = true
     }
@@ -67,19 +98,20 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
             sy[i] = landmarks[i].y() * imgH * scaleFactor + offsetY
         }
 
-        // 1. Draw all 468 landmark dots (subtle mesh effect)
+        // 1. Draw all 468 landmarks (subtle dots)
         for (i in landmarks.indices) {
-            canvas.drawCircle(sx[i], sy[i], 1f, dotPaint)
+            // Draw every 5th landmark to reduce visual clutter, or all if preferred
+            if (i % 3 == 0) canvas.drawCircle(sx[i], sy[i], 1.5f, dotPaint)
         }
 
-        // 2. Draw contour lines for key facial features
-        drawConnections(canvas, sx, sy, landmarks.size, FACE_OVAL, contourPaint)
-        drawConnections(canvas, sx, sy, landmarks.size, LEFT_EYE, contourPaint)
-        drawConnections(canvas, sx, sy, landmarks.size, RIGHT_EYE, contourPaint)
-        drawConnections(canvas, sx, sy, landmarks.size, LIPS_OUTER, contourPaint)
-        drawConnections(canvas, sx, sy, landmarks.size, LIPS_INNER, contourPaint)
-        drawConnections(canvas, sx, sy, landmarks.size, LEFT_EYEBROW, contourPaint)
-        drawConnections(canvas, sx, sy, landmarks.size, RIGHT_EYEBROW, contourPaint)
+        // 2. Draw contour lines for key facial features with specific colors
+        drawConnections(canvas, sx, sy, landmarks.size, FACE_OVAL, facePaint)
+        drawConnections(canvas, sx, sy, landmarks.size, LEFT_EYE, eyesPaint)
+        drawConnections(canvas, sx, sy, landmarks.size, RIGHT_EYE, eyesPaint)
+        drawConnections(canvas, sx, sy, landmarks.size, LIPS_OUTER, lipsPaint)
+        drawConnections(canvas, sx, sy, landmarks.size, LIPS_INNER, lipsPaint)
+        drawConnections(canvas, sx, sy, landmarks.size, LEFT_EYEBROW, browsPaint)
+        drawConnections(canvas, sx, sy, landmarks.size, RIGHT_EYEBROW, browsPaint)
     }
 
     private fun drawConnections(

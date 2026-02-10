@@ -2,4 +2,19 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Accent palette -->
+    <color name="accentCyan">#FF00E5FF</color>
+    <color name="accentTeal">#FF1DE9B6</color>
+    <color name="accentCoral">#FFFF6E7F</color>
+    <color name="accentGold">#FFFFD54F</color>
+    <color name="accentEmerald">#FF69F0AE</color>
+
+    <!-- Glass overlay -->
+    <color name="glassDark">#B3101020</color>
+    <color name="glassStroke">#3300E5FF</color>
+
+    <!-- Text -->
+    <color name="textPrimary">#F0FFFFFF</color>
+    <color name="textSecondary">#99FFFFFF</color>
 </resources>
